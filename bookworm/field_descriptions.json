@@ -1,0 +1,16 @@
+[ {"datatype": "categorical", "field": "canon", "unique": true, "type": "character"},
+ {"datatype": "etc", "field": "imprint", "unique": true, "type": "character"},
+ {"datatype": "categorical", "field": "nationality", "unique": true, "type": "character"},
+ {"datatype": "categorical", "field": "author", "unique": true, "type": "character"},
+ {"datatype": "categorical", "field": "pubname", "unique": true, "type": "character"},
+ {"datatype": "categorical", "field": "inferreddate", "unique": true, "type": "integer"},
+ {"datatype": "categorical", "field": "recept", "unique": true, "type": "character"},
+ {"datatype": "time", "field": "birth", "unique": true, "type":"character","derived":[{"resolution":"year"}]},	{"field":"searchstring","datatype":"searchstring","type":"text","unique":true},
+
+ {"datatype": "etc", "field": "judge", "unique": true, "type": "character"},
+ {"datatype": "time", "field": "yrrev", "unique": true, "type": "character","derived":[{"resolution":"year"}]},
+ {"datatype": "categorical", "field": "gender", "unique": true, "type": "character"},
+ {"datatype": "time", "field": "firstpub", "unique": true, "type": "character","derived":[{"resolution":"year"}]},
+ {"datatype": "time", "field": "actualdate", "unique": true, "type": "character","derived":[{"resolution":"year"}]},
+ {"datatype": "categorical", "field": "title", "unique": true, "type": "character"},
+ {"datatype": "time", "field": "pubrev", "unique": true, "type": "character","derived":[{"resolution":"year"}]}]

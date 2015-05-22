@@ -1,0 +1,9 @@
+bookworm/paceofchange
+bookworm/unigrams.txt
+bookworm/jsoncatalog.txt
+__pycache__
+mainmodelpredictions.coefs.csv
+mainmodelpredictions.csv
+nationalpredictions.coefs.csv
+nationalpredictions.csv
+
