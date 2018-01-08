@@ -34,7 +34,7 @@ if command == 'full':
 
     ## PATHS.
 
-    sourcefolder = 'poems/'
+    sourcefolder = 'SRTs/'
     extension = '.poe.tsv'
     classpath = 'poemeta.csv'
     outputpath = 'mainmodelpredictions.csv'
@@ -77,18 +77,26 @@ if command == 'full':
     numfeatures = 3200
     regularization = .00007
 
-    paths = (sourcefolder, extension, classpath, outputpath)
-    exclusions = (excludeif, excludeifnot, excludebelow, excludeabove, sizecap)
-    thresholds = (pastthreshold, futurethreshold)
-    classifyconditions = (category2sorton, positive_class, datetype, numfeatures, regularization)
 
-    rawaccuracy, allvolumes, coefficientuples = pc.create_model(paths, exclusions, thresholds, classifyconditions)
 
-    tiltaccuracy = pc.diachronic_tilt(allvolumes, 'linear', [])
+    f = open("model-results.tsv","w")
+    f.write("dims\tfeatures\twith_tilt\taccuracy\n")
 
-    print('If we divide the dataset with a horizontal line at 0.5, accuracy is: ', str(rawaccuracy))
-
-    print("Divided with a line fit to the data trend, it's ", str(tiltaccuracy))
+    for numfeatures in [20,40,80,160,480,960,1600,3200]:
+        for sourcefolder in ["poems/","logSRTs/"]:
+            paths = (sourcefolder, extension, classpath, outputpath)
+            classifyconditions = (category2sorton, positive_class, datetype, numfeatures, regularization)
+            exclusions = (excludeif, excludeifnot, excludebelow, excludeabove, sizecap)
+            thresholds = (pastthreshold, futurethreshold)
+            rawaccuracy, allvolumes, coefficientuples = pc.create_model(paths, exclusions, thresholds, classifyconditions)
+            tiltaccuracy = pc.diachronic_tilt(allvolumes, 'linear', [])
+            f.write("%i\t%s\tF\t%s\n" % (numfeatures,sourcefolder,str(rawaccuracy)))
+            f.write("%i\t%s\tT\t%s\n" % (numfeatures,sourcefolder,str(tiltaccuracy)))
+            f.flush()
+            results = """
+            If we divide the dataset with a horizontal line at 0.5, accuracy is: %s
+            Divided with a line fit to the data trend, it's %s""" %(str(rawaccuracy), str(tiltaccuracy))
+            print(results)
 
 elif command == 'quarters':
     ## PATHS.

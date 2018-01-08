@@ -69,6 +69,7 @@ def forceint(astring):
 
     return intval
 
+
 def get_features(wordcounts, wordlist):
     numwords = len(wordlist)
     wordvec = np.zeros(numwords)
@@ -265,14 +266,18 @@ def create_model(paths, exclusions, thresholds, classifyconditions):
                         continue
                     word = fields[0]
                     if len(word) > 0 and word[0].isalpha():
-                        count = int(fields[1])
+                        count = float(fields[1])
                         wordcounts[word] += 1
                         # for initial feature selection we use the number of
                         # *documents* that contain a given word,
                         # so it's just +=1.
 
-    vocablist = [x[0] for x in wordcounts.most_common(numfeatures)]
-
+    if sourcefolder=="poems/":
+        vocablist = [x[0] for x in wordcounts.most_common(numfeatures)]
+    else:
+        # In an SRT, we can just take them arbitrarily. The top ten is [V0,V1,V2,...,V10]
+        vocablist = ["V" + str(i) for i in range(numfeatures)]
+        
     # vocablist = binormal_select(vocablist, positivecounts, negativecounts, totalposvols, totalnegvols, 3000)
     # Feature selection is deprecated. There are cool things
     # we could do with feature selection,
@@ -334,7 +339,7 @@ def create_model(paths, exclusions, thresholds, classifyconditions):
                     continue
 
                 word = fields[0]
-                count = int(fields[1])
+                count = float(fields[1])
                 voldict[word] = count
                 totalcount += count
 
@@ -348,9 +353,13 @@ def create_model(paths, exclusions, thresholds, classifyconditions):
             voldata.append(features)
         else:
             features = get_features(voldict, vocablist)
-            voldata.append(features / (totalcount + 0.001))
 
-
+            if sourcefolder=="poems/":
+                voldata.append(features / (totalcount + 0.001))
+            else:
+                # For SRT transformations, normalization is already handled
+                voldata.append(features)
+                
         volsizes[volid] = totalcount
         classflag = classdictionary[volid]
         classvector.append(classflag)
