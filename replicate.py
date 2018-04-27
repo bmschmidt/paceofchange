@@ -4,6 +4,7 @@
 
 import parallel_crossvalidate as pc
 import sys
+import os
 
 allowable = {"full", "quarters", "nations", "genders", "canon", "halves"}
 
@@ -29,6 +30,18 @@ else:
         command = input('Which option do you want to run? ')
 
 assert command in allowable
+
+import traceback
+import warnings
+import sys
+
+def warn_with_traceback(message, category, filename, lineno, file=None, line=None):
+
+    log = file if hasattr(file,'write') else sys.stderr
+    traceback.print_stack(file=log)
+    log.write(warnings.formatwarning(message, category, filename, lineno, line))
+
+warnings.showwarning = warn_with_traceback
 
 if command == 'full':
 
@@ -77,13 +90,20 @@ if command == 'full':
     numfeatures = 3200
     regularization = .00007
 
+    # I added some dims later. This lets me just append to the existing file.
+    if os.path.exists("model-results.tsv"):
+        already_done = set([int(a.split("\t")[0]) for a in open("model-results.tsv").readlines()[1:]])
+        f = open("model-results.tsv","a")        
+    else:
+        already_done = set([])
+        f = open("model-results.tsv","w")
+        f.write("dims\tfeatures\twith_tilt\taccuracy\n")
+        
 
-
-    f = open("model-results.tsv","w")
-    f.write("dims\tfeatures\twith_tilt\taccuracy\n")
-
-    for numfeatures in [20,40,80,160,480,960,1600,3200]:
-        for sourcefolder in ["poems/","logSRTs/"]:
+    for numfeatures in [20,40,80,160,320,800,1200,1600,2400,3200,6400]:
+        if numfeatures in already_done:
+            continue
+        for sourcefolder in ["poems/","logSRTs/", "SRTs"]:
             paths = (sourcefolder, extension, classpath, outputpath)
             classifyconditions = (category2sorton, positive_class, datetype, numfeatures, regularization)
             exclusions = (excludeif, excludeifnot, excludebelow, excludeabove, sizecap)
@@ -94,8 +114,10 @@ if command == 'full':
             f.write("%i\t%s\tT\t%s\n" % (numfeatures,sourcefolder,str(tiltaccuracy)))
             f.flush()
             results = """
+            %s features
+            Using %s for features
             If we divide the dataset with a horizontal line at 0.5, accuracy is: %s
-            Divided with a line fit to the data trend, it's %s""" %(str(rawaccuracy), str(tiltaccuracy))
+            Divided with a line fit to the data trend, it's %s""" %(str(numfeatures), str(sourcefolder), str(rawaccuracy), str(tiltaccuracy))
             print(results)
 
 elif command == 'quarters':
